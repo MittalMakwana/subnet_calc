@@ -44,12 +44,36 @@ class Ipaddress(object):
     '''
     def __init__(self, ip):
         self.ip = ip
-        if len(ip) != 4:
+        if len(ip) != 4 or len([i for i in ip if i > 256]) != 0:
             raise ValueError
 
     def ip_int_to_bin(self):
         ip_bin = ["{0:08b}".format(int(i)) for i in self.ip]
         return ip_bin
+
+    def ip_private(self):
+        if (self.ip[0] == 10) or (self.ip[0] == 127) or (self.ip[0] == 172 and (16 <= self.ip[1] <= 31)) or (self.ip[0] == 192 and self.ip[1] == 168):
+            return True
+        else:
+            return False
+
+    def ip_class(self):
+        if 0 <= self.ip[0] <= 127:
+            return "A"
+        elif 127 <= self.ip[0] <= 191:
+            return "B"
+        elif 192 <= self.ip[0] <= 223:
+            return "C"
+        elif 224 <= self.ip[0] <= 239:
+            return "D"
+        else:
+            return "E"
+
+    def ip_loopback(self):
+        if self.ip[0] == 127:
+            return True
+        else:
+            return False
 
 
 class Network(Ipaddress, Netmask):
@@ -98,20 +122,20 @@ class Network(Ipaddress, Netmask):
 
 if __name__ == "__main__":
     t = Network([10, 0, 127, 255], 32)
-    try:
-        i = Ipaddress([10, 0, 0])
-    except ValueError:
-        print("Ipaddress not correct")
-    print t.ip
-    print t.mask_bin()
-    print t.wild_mask_bin()
-    print t.network()
-    print t.broadcast()
-    print t.ip_int_to_bin()
-    print t.total_host()
-    print t.mask_int_to_bin()
-    print t.wild_mask_int_to_bin()
-    print t.first_host()
-    print t.last_host()
-    print t.is_network_addr()
-    print t.is_broadcast_addr()
+    i = Ipaddress([127, 16, 255, 255])
+    print i.ip_private()
+    print i.ip_class()
+    print i.ip_loopback()
+    # print t.ip
+    # print t.mask_bin()
+    # print t.wild_mask_bin()
+    # print t.network()
+    # print t.broadcast()
+    # print t.ip_int_to_bin()
+    # print t.total_host()
+    # print t.mask_int_to_bin()
+    # print t.wild_mask_int_to_bin()
+    # print t.first_host()
+    # print t.last_host()
+    # print t.is_network_addr()
+    # print t.is_broadcast_addr()
