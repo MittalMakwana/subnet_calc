@@ -29,6 +29,12 @@ class Netmask(object):
     def total_host(self):
         return (2**(32-self.mask)) - 2
 
+    def mask_int_to_bin(self):
+        return [int(i, 2) for i in Netmask.mask_bin(self)]
+
+    def wild_mask_int_to_bin(self):
+        return [int(i, 2) for i in Netmask.wild_mask_bin(self)]
+
 
 class Ipaddress(object):
     '''
@@ -49,50 +55,45 @@ class Network(Ipaddress, Netmask):
     def __init__(self, ip, mask):
         Netmask.__init__(self, mask)
         Ipaddress.__init__(self, ip)
-    
+
+    def network(self):
+        IP_bin = Ipaddress.ip_int_to_bin(self)
+        MASK_bin = Netmask.mask_bin(self)
+        ip_mask = zip(IP_bin, MASK_bin)
+        return [int(i, 2) & int(m, 2) for i, m in ip_mask]
+
+    def broadcast(self):
+        # networkaddr = Network.network(self)
+        networkbin = Ipaddress.ip_int_to_bin(self)
+        wildcard = Netmask.wild_mask_bin(self)
+        ip_mask = zip(networkbin, wildcard)
+        return [int(i, 2) | int(m, 2) for i, m in ip_mask]
+
+    def first_host(self):
+        network = Network.network(self)[:-1]
+        network.append(Network.network(self)[-1] + 1)
+        return network
+
+    def last_host(self):
+        network = Network.broadcast(self)[:-1]
+        network.append(Network.broadcast(self)[-1] - 1)
+        return network
 
 
-def broadcast(ip, mask):
-    networkaddr = network(ip, mask)
-    networkbin = ip_bin(networkaddr)
-    wildcard = wild_mask_bin(mask)
-    ip_mask = zip(networkbin, wildcard)
-    return [int(i, 2) + int(m, 2) for i, m in ip_mask]
+def ip_bin_to_int(IP):
+    return [int(i, 2) for i in Ipaddress.ip_int_to_bin(IP)]
 
 
-def ip_bin_to_int(self):
-    return [int(i, 2) for i in self.ip]
-
-
-def print_result(ip_list, mask):
-    net_mask = ip(mask_bin(mask))
-    wild_card = ip(wild_mask_bin(mask))
-    net = network(ip_list, mask)
-    broad = broadcast(ip_list, MASK)
-    f_host = net_mask[:-1]
-    f_host.append(net_mask[-1]+1)
-    l_host = broad[:-1]
-    l_host.append(broad[-1]-1)
-    host = total_host(mask)
-    print "Address: " + str(ip_list)
-    print "Net Mask: " + str(net_mask)
-    print "Wildcard: " + str(wild_card)
-    print "Network Address: " + str(net)
-    print "Broadcast Address: " + str(broad)
-    print "1st host: " + str(f_host)
-    print "Last host: " + str(l_host)
-    print "Hosts : " + str(host)
-
-
-# ip = Ipaddress([10, 0, 0, 130])
-# MASK = 24
-
-t = Network([10, 0, 0, 130], 23)
-# v = Netmask(23)
-# print ip.ip_int_to_bin()
-# print v.wild_mask_bin()
-# print v.mask_bin()
-# print v.total_host()
-print t.wild_mask_bin()
-print t.total_host()
-# print_result(IP, MASK)
+if __name__ == "__main__":
+    t = Network([10, 0, 0, 1], 17)
+    print t.ip
+    print t.mask_bin()
+    print t.wild_mask_bin()
+    print t.network()
+    print t.broadcast()
+    print t.ip_int_to_bin()
+    print t.total_host()
+    print t.mask_int_to_bin()
+    print t.wild_mask_int_to_bin()
+    print t.first_host()
+    print t.last_host()
