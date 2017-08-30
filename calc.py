@@ -80,10 +80,6 @@ class Network(Ipaddress, Netmask):
         return network
 
 
-def ip_bin_to_int(IP):
-    return [int(i, 2) for i in Ipaddress.ip_int_to_bin(IP)]
-
-
 if __name__ == "__main__":
     t = Network([10, 0, 0, 1], 17)
     print t.ip
