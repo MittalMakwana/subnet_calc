@@ -5,6 +5,8 @@ class Netmask(object):
     '''
     def __init__(self, mask):
         self.mask = mask
+        if mask < 0 or mask > 32:
+            raise ValueError
 
     def mask_bin(self):
         MASK_bin = ''
@@ -42,6 +44,8 @@ class Ipaddress(object):
     '''
     def __init__(self, ip):
         self.ip = ip
+        if len(ip) != 4:
+            raise ValueError
 
     def ip_int_to_bin(self):
         ip_bin = ["{0:08b}".format(int(i)) for i in self.ip]
@@ -93,7 +97,11 @@ class Network(Ipaddress, Netmask):
 
 
 if __name__ == "__main__":
-    t = Network([10, 0, 127, 255], 17)
+    t = Network([10, 0, 127, 255], 32)
+    try:
+        i = Ipaddress([10, 0, 0])
+    except ValueError:
+        print("Ipaddress not correct")
     print t.ip
     print t.mask_bin()
     print t.wild_mask_bin()
