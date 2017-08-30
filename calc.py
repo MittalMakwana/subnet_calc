@@ -79,9 +79,21 @@ class Network(Ipaddress, Netmask):
         network.append(Network.broadcast(self)[-1] - 1)
         return network
 
+    def is_network_addr(self):
+        if Network.network(self) == self.ip:
+            return True
+        else:
+            return False
+
+    def is_broadcast_addr(self):
+        if Network.broadcast(self) == self.ip:
+            return True
+        else:
+            return False
+
 
 if __name__ == "__main__":
-    t = Network([10, 0, 0, 1], 17)
+    t = Network([10, 0, 127, 255], 17)
     print t.ip
     print t.mask_bin()
     print t.wild_mask_bin()
@@ -93,3 +105,5 @@ if __name__ == "__main__":
     print t.wild_mask_int_to_bin()
     print t.first_host()
     print t.last_host()
+    print t.is_network_addr()
+    print t.is_broadcast_addr()
