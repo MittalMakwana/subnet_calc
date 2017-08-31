@@ -1,6 +1,15 @@
 import random
 
 
+class Subnet(object):
+    '''
+    This class can be use to defin object with string input
+
+    '''
+    def __init__(self, subnet):
+        self.ip = subnet.split('/')[0].split('.')
+        self.mask = subnet.split('/')[1]
+
 class Netmask(object):
     '''
     A netmask is a 32-bit mask used to divide an IP address into subnets and
@@ -152,6 +161,9 @@ class Network(Ipaddress, Netmask):
 
 
 if __name__ == "__main__":
+    a = Subnet("10.0.0.1/24")
+    print a.ip
+    print a.mask
     t = Network([10, 0, 0, 1], 24)
     print t.get_all_host()
     print t.ip
