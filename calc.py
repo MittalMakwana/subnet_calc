@@ -1,3 +1,6 @@
+import random
+
+
 class Netmask(object):
     '''
     A netmask is a 32-bit mask used to divide an IP address into subnets and
@@ -126,11 +129,26 @@ class Network(Ipaddress, Netmask):
         host_list = []
         for i in range(Netmask.total_host(self)):
             temp = bin(int("".join(Ipaddress.ip_int_to_bin(self)),
-                                            2) + i)[2:].zfill(32)
+                       2) + i)[2:].zfill(32)
             temp2 = [temp[j:j+8] for j in range(0, len(temp), 8)]
             temp3 = [int(k, 2) for k in temp2]
             host_list.append(".".join(str(x) for x in temp3))
         return host_list
+
+    def gen_random_host(self, *count):
+        host = []
+        if len(count) == 0:
+            count += (1,)
+        if count[0] > Network.total_host(self) or count[0] is int:
+            raise ValueError
+        for i in range(count[0]):
+            random_host = random.randint(0, Netmask.total_host(self))
+            temp = bin(int("".join(Ipaddress.ip_int_to_bin(self)), 2) +
+                       random_host)[2:].zfill(32)
+            temp2 = [temp[j:j+8] for j in range(0, len(temp), 8)]
+            temp3 = [int(k, 2) for k in temp2]
+            host.append(".".join(str(x) for x in temp3))
+        return host
 
 
 if __name__ == "__main__":
@@ -149,3 +167,4 @@ if __name__ == "__main__":
     print t.last_host()
     print t.is_network_addr()
     print t.is_broadcast_addr()
+    print t.gen_random_host(45)
