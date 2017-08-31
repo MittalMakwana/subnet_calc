@@ -52,7 +52,10 @@ class Ipaddress(object):
         return ip_bin
 
     def ip_private(self):
-        if (self.ip[0] == 10) or (self.ip[0] == 127) or (self.ip[0] == 172 and (16 <= self.ip[1] <= 31)) or (self.ip[0] == 192 and self.ip[1] == 168):
+        if ((self.ip[0] == 10) or
+           (self.ip[0] == 127) or
+           (self.ip[0] == 172 and (16 <= self.ip[1] <= 31)) or
+           (self.ip[0] == 192 and self.ip[1] == 168)):
             return True
         else:
             return False
@@ -119,23 +122,30 @@ class Network(Ipaddress, Netmask):
         else:
             return False
 
+    def get_all_host(self):
+        host_list = []
+        for i in range(Netmask.total_host(self)):
+            temp = bin(int("".join(Ipaddress.ip_int_to_bin(self)),
+                                            2) + i)[2:].zfill(32)
+            temp2 = [temp[j:j+8] for j in range(0, len(temp), 8)]
+            temp3 = [int(k, 2) for k in temp2]
+            host_list.append(".".join(str(x) for x in temp3))
+        return host_list
+
 
 if __name__ == "__main__":
-    t = Network([10, 0, 127, 255], 32)
-    i = Ipaddress([127, 16, 255, 255])
-    print i.ip_private()
-    print i.ip_class()
-    print i.ip_loopback()
-    # print t.ip
-    # print t.mask_bin()
-    # print t.wild_mask_bin()
-    # print t.network()
-    # print t.broadcast()
-    # print t.ip_int_to_bin()
-    # print t.total_host()
-    # print t.mask_int_to_bin()
-    # print t.wild_mask_int_to_bin()
-    # print t.first_host()
-    # print t.last_host()
-    # print t.is_network_addr()
-    # print t.is_broadcast_addr()
+    t = Network([10, 0, 0, 1], 24)
+    print t.get_all_host()
+    print t.ip
+    print t.mask_bin()
+    print t.wild_mask_bin()
+    print t.network()
+    print t.broadcast()
+    print t.ip_int_to_bin()
+    print t.total_host()
+    print t.mask_int_to_bin()
+    print t.wild_mask_int_to_bin()
+    print t.first_host()
+    print t.last_host()
+    print t.is_network_addr()
+    print t.is_broadcast_addr()
