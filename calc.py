@@ -1,15 +1,6 @@
 import random
 
 
-class Subnet(object):
-    '''
-    This class can be use to defin object with string input
-
-    '''
-    def __init__(self, subnet):
-        self.ip = subnet.split('/')[0].split('.')
-        self.mask = subnet.split('/')[1]
-
 class Netmask(object):
     '''
     A netmask is a 32-bit mask used to divide an IP address into subnets and
@@ -17,8 +8,9 @@ class Netmask(object):
     '''
     def __init__(self, mask):
         self.mask = mask
-        if mask < 0 or mask > 32:
-            raise ValueError
+        if 0 < mask > 32:
+            # print mask
+            raise ValueError('Mask Incorrect')
 
     def mask_bin(self):
         MASK_bin = ''
@@ -56,8 +48,10 @@ class Ipaddress(object):
     '''
     def __init__(self, ip):
         self.ip = ip
-        if len(ip) != 4 or len([i for i in ip if i > 256]) != 0:
-            raise ValueError
+        # print ip
+        if len(ip) != 4 or len([i for i in ip if i > 255]) != 0:
+            # print [i for i in ip if i > 256]
+            raise ValueError('IP address Incorrect')
 
     def ip_int_to_bin(self):
         ip_bin = ["{0:08b}".format(int(i)) for i in self.ip]
@@ -148,8 +142,8 @@ class Network(Ipaddress, Netmask):
         host = []
         if len(count) == 0:
             count += (1,)
-        if count[0] > Network.total_host(self) or count[0] is int:
-            raise ValueError
+        # if count[0] > Network.total_host(self) or count[0] is int:
+        #     raise ValueError('List of Random IP exceds the total number of host')
         for i in range(count[0]):
             random_host = random.randint(0, Netmask.total_host(self))
             temp = bin(int("".join(Ipaddress.ip_int_to_bin(self)), 2) +
@@ -160,23 +154,43 @@ class Network(Ipaddress, Netmask):
         return host
 
 
+class Subnet(Network):
+    '''
+    This class can be use to defin object with string input
+
+    '''
+    def __init__(self, subnet):
+        try:
+            ip = [int(i) for i in subnet.split('/')[0].split('.')]
+        except:
+            raise ValueError('IP address incorrect')
+        mask = int(subnet.split('/')[1])
+        Network.__init__(self, ip, mask)
+
+
 if __name__ == "__main__":
-    a = Subnet("10.0.0.1/24")
+    a = Subnet("10.0.0.1/1")
     print a.ip
     print a.mask
-    t = Network([10, 0, 0, 1], 24)
-    print t.get_all_host()
-    print t.ip
-    print t.mask_bin()
-    print t.wild_mask_bin()
-    print t.network()
-    print t.broadcast()
-    print t.ip_int_to_bin()
-    print t.total_host()
-    print t.mask_int_to_bin()
-    print t.wild_mask_int_to_bin()
-    print t.first_host()
-    print t.last_host()
-    print t.is_network_addr()
-    print t.is_broadcast_addr()
-    print t.gen_random_host(45)
+    print a.first_host()
+    print a.broadcast()
+    print a.last_host()
+    print a.is_network_addr()
+    print a.total_host()
+    print a.gen_random_host(34)
+    # t = Network([10, 0, 0, 1], 24)
+    # print t.get_all_host()
+    # print t.ip
+    # print t.mask_bin()
+    # print t.wild_mask_bin()
+    # print t.network()
+    # print t.broadcast()
+    # print t.ip_int_to_bin()
+    # print t.total_host()
+    # print t.mask_int_to_bin()
+    # print t.wild_mask_int_to_bin()
+    # print t.first_host()
+    # print t.last_host()
+    # print t.is_network_addr()
+    # print t.is_broadcast_addr()
+    # print t.gen_random_host(45)
